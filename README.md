@@ -103,6 +103,6 @@ Masuk menggunakan username dan password yang terdaftar.
 
 **Developers:**
 
-- Dikembangkan oleh: [ConsCode]
+- Dikembangkan oleh: [Haqqul Amal]
 - Framework: CodeIgniter 4.6
 - PDF Engine: mPDF 8.x

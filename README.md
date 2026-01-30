@@ -51,13 +51,22 @@ Ikuti langkah-langkah di bawah ini untuk menjalankan aplikasi di komputer lokal 
      - `permohonan_sk`
      - `roles` (jika menggunakan tabel role terpisah)
    - File konfigurasi database ada di `.env`. Default setting untuk XAMPP:
+
      ```ini
      database.default.hostname = localhost
      database.default.database = surat_perizinan
      database.default.username = root
      database.default.password =
      ```
+
+     ```
      _(Password dikosongkan untuk default XAMPP)_
+
+     ```
+
+   - **IMPORT DATABASE (PENTING)**:
+     - Import file `full_database.sql` (ada di folder project) ke database `surat_perizinan`.
+     - Ini sudah termasuk tabel user, login, penduduk, dan akun Admin default (`admin` / `123`).
 
 4. **Jalankan Aplikasi**
    Gunakan built-in server CodeIgniter untuk menjalankan aplikasi:
@@ -149,6 +158,6 @@ Masuk menggunakan username dan password yang terdaftar.
 
 **Developers:**
 
-- Dikembangkan oleh: [Cons Code]
+- Dikembangkan oleh: [Haqqul Amal]
 - Framework: CodeIgniter 4.6
 - PDF Engine: mPDF 8.x

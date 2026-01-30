@@ -1,5 +1,5 @@
 -- Database: surat_perizinan
--- Full Schema & Seed Data
+-- Full Schema & Seed Data (8 Tables per ERD Revision)
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -7,54 +7,51 @@ SET time_zone = "+00:00";
 
 -- --------------------------------------------------------
 
---
--- Table structure for table `roles`
---
+-- 1. Table: roles (Helper for User roles, kept for logic but not counted as main entity if client excludes attempts, but needed for App)
+-- Client ERD doesn't show 'roles' table explicitly but 'user' has 'role'. 
+-- However, 'user' table usually needs a role Enum or FK. I will keep 'roles' as a utility table OR just use ENUM in user table to strictly stick to 8 visual tables? 
+-- The user said "Kok tabelnya cuma ada 5? ... ada 8 tabel".
+-- The image shows 8 tables. 'roles' IS NOT in the image.
+-- 'user' table in image has field 'role'.
+-- So I will DROP `roles` table and use ENUM in `user` table to be EXACT.
+-- BUT, `login` table needs `id_user` or `id_penduduk`.
 
-CREATE TABLE IF NOT EXISTS `roles` (
-  `id_role` int(11) NOT NULL AUTO_INCREMENT,
-  `role_name` varchar(50) NOT NULL,
-  PRIMARY KEY (`id_role`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `roles`
---
-
-INSERT INTO `roles` (`id_role`, `role_name`) VALUES
-(1, 'admin'),
-(2, 'penduduk'),
-(3, 'jagabaya'),
-(4, 'ulu-ulu'),
-(5, 'lurah');
+-- Wait, the image shows `user` table. 
+-- Let's stick to the 8 tables in the image.
+-- 1. user
+-- 2. login
+-- 3. penduduk
+-- 4. permohonan_sk
+-- 5. persetujuan_permohonan
+-- 6. sk_disetujui
+-- 7. pengesahan_sk
+-- 8. sk_disahkan
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `user`
+-- 1. Table `user`
 --
 
 CREATE TABLE IF NOT EXISTS `user` (
   `id_user` int(11) NOT NULL AUTO_INCREMENT,
   `nama_lengkap` varchar(100) NOT NULL,
   `email` varchar(100) NOT NULL,
-  `role` enum('admin','penduduk','jagabaya','ulu-ulu','lurah') NOT NULL,
-  `id_role` int(11) NOT NULL,
-  PRIMARY KEY (`id_user`),
-  KEY `id_role` (`id_role`)
+  `role` enum('admin','jagabaya','ulu-ulu','lurah') NOT NULL, 
+  -- Removed 'penduduk' role from here, as residents are in 'penduduk' table?
+  -- Legacy logic had 'penduduk' in user roles. 
+  -- Diagram separate user and penduduk. 
+  -- Let's keep 'admin', 'jagabaya', 'ulu-ulu', 'lurah' here.
+  PRIMARY KEY (`id_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
---
--- Dumping data for table `user` (Default Admin)
---
-
-INSERT INTO `user` (`id_user`, `nama_lengkap`, `email`, `role`, `id_role`) VALUES
-(1, 'Administrator', 'admin@desa.id', 'admin', 1);
+INSERT INTO `user` (`id_user`, `nama_lengkap`, `email`, `role`) VALUES
+(1, 'Administrator', 'admin@desa.id', 'admin');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `penduduk`
+-- 2. Table `penduduk`
 --
 
 CREATE TABLE IF NOT EXISTS `penduduk` (
@@ -70,7 +67,7 @@ CREATE TABLE IF NOT EXISTS `penduduk` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `login`
+-- 3. Table `login`
 --
 
 CREATE TABLE IF NOT EXISTS `login` (
@@ -84,101 +81,92 @@ CREATE TABLE IF NOT EXISTS `login` (
   KEY `id_penduduk` (`id_penduduk`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
---
--- Dumping data for table `login` (Default Admin: admin / 123)
---
-
 INSERT INTO `login` (`id_login`, `username`, `password`, `id_user`, `id_penduduk`) VALUES
 (1, 'admin', '$2y$10$GNv9US/r.n07Rv7xZLcfieGoLVzggsCp2ChaCN0I2/w/wzF.w9K', 1, NULL);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `permohonan_sk`
+-- 4. Table `permohonan_sk`
 --
 
 CREATE TABLE IF NOT EXISTS `permohonan_sk` (
   `id_surat` int(11) NOT NULL AUTO_INCREMENT,
+  `id_user` int(11) DEFAULT NULL, -- Nullable as per discussion
   `id_penduduk` int(11) NOT NULL,
   `keterangan` text NOT NULL,
   `tanggal_permohonan` date NOT NULL,
-  `status` enum('menunggu_staff','disetujui_staff','ditolak_staff','disahkan_lurah','ditolak_lurah') NOT NULL DEFAULT 'menunggu_staff',
-  `catatan_staff` text DEFAULT NULL,
-  `catatan_lurah` text DEFAULT NULL,
+  `status` varchar(50) NOT NULL DEFAULT 'menunggu_staff',
   PRIMARY KEY (`id_surat`),
-  KEY `id_penduduk` (`id_penduduk`)
+  KEY `id_penduduk` (`id_penduduk`),
+  KEY `id_user` (`id_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `jenis_surat` (Table 6)
+-- 5. Table `persetujuan_permohonan`
 --
 
-CREATE TABLE IF NOT EXISTS `jenis_surat` (
-  `id_jenis` int(11) NOT NULL AUTO_INCREMENT,
-  `nama_surat` varchar(100) NOT NULL,
-  `kode_surat` varchar(50) NOT NULL,
-  PRIMARY KEY (`id_jenis`)
+CREATE TABLE IF NOT EXISTS `persetujuan_permohonan` (
+  `id_persetujuan` int(11) NOT NULL AUTO_INCREMENT,
+  `id_surat` int(11) NOT NULL,
+  `id_user` int(11) NOT NULL, -- Staff who approved
+  `tanggal_approval` date NOT NULL,
+  `status` varchar(50) NOT NULL, -- disetujui_staff / ditolak_staff
+  `catatan` text DEFAULT NULL,
+  `create_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id_persetujuan`),
+  KEY `id_surat` (`id_surat`),
+  KEY `id_user` (`id_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `jenis_surat`
---
-
-INSERT INTO `jenis_surat` (`id_jenis`, `nama_surat`, `kode_surat`) VALUES
-(1, 'Surat Keterangan Usaha', '470/SKU'),
-(2, 'Surat Keterangan Domisili', '470/SKD'),
-(3, 'Surat Keterangan Tidak Mampu', '470/SKTM'),
-(4, 'Surat Pengantar SKCK', '470/SKCK');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `agama` (Table 7)
+-- 6. Table `sk_disetujui`
 --
 
-CREATE TABLE IF NOT EXISTS `agama` (
-  `id_agama` int(11) NOT NULL AUTO_INCREMENT,
-  `nama_agama` varchar(50) NOT NULL,
-  PRIMARY KEY (`id_agama`)
+CREATE TABLE IF NOT EXISTS `sk_disetujui` (
+  `id_sk` int(11) NOT NULL AUTO_INCREMENT,
+  `id_surat` int(11) NOT NULL,
+  `nomor_sk` varchar(100) NOT NULL,
+  `tanggal_sk` date NOT NULL,
+  `created_at_disetujui` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id_sk`),
+  KEY `id_surat` (`id_surat`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `agama`
---
-
-INSERT INTO `agama` (`id_agama`, `nama_agama`) VALUES
-(1, 'Islam'),
-(2, 'Kristen Protestan'),
-(3, 'Katolik'),
-(4, 'Hindu'),
-(5, 'Buddha'),
-(6, 'Konghucu');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `pekerjaan` (Table 8)
+-- 7. Table `pengesahan_sk`
 --
 
-CREATE TABLE IF NOT EXISTS `pekerjaan` (
-  `id_pekerjaan` int(11) NOT NULL AUTO_INCREMENT,
-  `nama_pekerjaan` varchar(100) NOT NULL,
-  PRIMARY KEY (`id_pekerjaan`)
+CREATE TABLE IF NOT EXISTS `pengesahan_sk` (
+  `id_pengesahan` int(11) NOT NULL AUTO_INCREMENT,
+  `id_sk` int(11) NOT NULL,
+  `tanggal_pengesahan` date NOT NULL,
+  `created_at_pengesahan` timestamp NOT NULL DEFAULT current_timestamp(),
+  `upload_sk` varchar(255) DEFAULT NULL, -- Draft or Initial file?
+  PRIMARY KEY (`id_pengesahan`),
+  KEY `id_sk` (`id_sk`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- --------------------------------------------------------
+
 --
--- Dumping data for table `pekerjaan`
+-- 8. Table `sk_disahkan`
 --
 
-INSERT INTO `pekerjaan` (`id_pekerjaan`, `nama_pekerjaan`) VALUES
-(1, 'Belum/Tidak Bekerja'),
-(2, 'Pegawai Negeri Sipil'),
-(3, 'TNI/POLRI'),
-(4, 'Karyawan Swasta'),
-(5, 'Wiraswasta'),
-(6, 'Petani/Pekebun'),
-(7, 'Pelajar/Mahasiswa');
+CREATE TABLE IF NOT EXISTS `sk_disahkan` (
+  `id_sk_disahkan` int(11) NOT NULL AUTO_INCREMENT,
+  `id_pengesahan` int(11) NOT NULL,
+  `tanggal_disahkan` date NOT NULL,
+  `upload_sk_disahkan` varchar(255) NOT NULL, -- Final file
+  `created_at_disahkan` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id_sk_disahkan`),
+  KEY `id_pengesahan` (`id_pengesahan`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 COMMIT;

@@ -42,27 +42,11 @@ class UserController extends BaseController
         $loginModel = new LoginModel();
 
         $role_name = $this->request->getVar('role');
-        $id_role = 0;
-
-        // Mapping simple role names to IDs based on roles table
-        $roles_map = [
-            'admin' => 1,
-            'penduduk' => 2,
-            'jagabaya' => 3,
-            'ulu-ulu' => 4,
-            'lurah' => 5
-        ];
-
-        if (isset($roles_map[$role_name])) {
-            $id_role = $roles_map[$role_name];
-        }
-
         // 1. Insert Profile into User Table
         $userData = [
             'nama_lengkap' => $this->request->getVar('nama_lengkap'),
             'email' => $this->request->getVar('email'),
             'role' => $role_name,
-            'id_role' => $id_role,
         ];
 
         $userModel->insert($userData);

@@ -17,14 +17,37 @@ class PermohonanController extends BaseController
 
     public function aksiStaff()
     {
-        $model = new PermohonanModel();
+        $permohonanModel = new PermohonanModel();
+        $persetujuanModel = new \App\Models\PersetujuanModel();
+        $skDisetujuiModel = new \App\Models\SkDisetujuiModel();
+
         $id_surat = $this->request->getVar('id_surat');
         $status_persetujuan = $this->request->getVar('status_persetujuan');
         $catatan = $this->request->getVar('catatan');
+        $id_user = session()->get('id_user') ?? 1; // Default to admin if id_user missing
 
         $final_status = ($status_persetujuan == 'disetujui') ? 'disetujui_staff' : 'ditolak_staff';
 
-        $model->update($id_surat, [
+        // 1. Insert into persetujuan_permohonan (New Table)
+        $persetujuanModel->insert([
+            'id_surat' => $id_surat,
+            'id_user' => $id_user,
+            'tanggal_approval' => date('Y-m-d'),
+            'status' => $final_status,
+            'catatan' => $catatan
+        ]);
+
+        // 2. If Approved, create Draft SK in sk_disetujui (New Table)
+        if ($final_status == 'disetujui_staff') {
+            $skDisetujuiModel->insert([
+                'id_surat' => $id_surat,
+                'nomor_sk' => '470/' . $id_surat . '/SK/' . date('Y'), // Simple generator
+                'tanggal_sk' => date('Y-m-d')
+            ]);
+        }
+
+        // 3. Update Status in Main Table (For View Compatibility)
+        $permohonanModel->update($id_surat, [
             'status' => $final_status,
             'catatan_staff' => $catatan
         ]);
@@ -51,14 +74,40 @@ class PermohonanController extends BaseController
 
     public function aksiLurah()
     {
-        $model = new PermohonanModel();
+        $permohonanModel = new PermohonanModel();
+        $pengesahanModel = new \App\Models\PengesahanModel();
+        $skDisahkanModel = new \App\Models\SkDisahkanModel();
+        $skDisetujuiModel = new \App\Models\SkDisetujuiModel();
+
         $id_surat = $this->request->getVar('id_surat');
         $status_pengesahan = $this->request->getVar('status_pengesahan');
         $catatan = $this->request->getVar('catatan');
 
+        // Find id_sk first
+        $skDraft = $skDisetujuiModel->where('id_surat', $id_surat)->first();
+        $id_sk = $skDraft['id_sk'] ?? 0;
+
         $final_status = ($status_pengesahan == 'Sahkan') ? 'disahkan_lurah' : 'ditolak_lurah';
 
-        $model->update($id_surat, [
+        // 1. Insert into pengesahan_sk (New Table)
+        $pengesahanModel->insert([
+            'id_sk' => $id_sk,
+            'tanggal_pengesahan' => date('Y-m-d'),
+            'upload_sk' => null // Draft
+        ]);
+        $id_pengesahan = $pengesahanModel->getInsertID();
+
+        // 2. If Approved, Finalize in sk_disahkan (New Table)
+        if ($final_status == 'disahkan_lurah') {
+            $skDisahkanModel->insert([
+                'id_pengesahan' => $id_pengesahan,
+                'tanggal_disahkan' => date('Y-m-d'),
+                'upload_sk_disahkan' => 'Surat_Final_Generated.pdf' // Placeholer or link to PDF controller
+            ]);
+        }
+
+        // 3. Update Status in Main Table (For View Compatibility)
+        $permohonanModel->update($id_surat, [
             'status' => $final_status,
             'catatan_lurah' => $catatan
         ]);

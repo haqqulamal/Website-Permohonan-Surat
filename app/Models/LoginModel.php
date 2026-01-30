@@ -16,7 +16,7 @@ class LoginModel extends Model
     public function getLoginData($username)
     {
         // Try linking to Admin/Staff User
-        $user = $this->select('login.*, user.nama_lengkap, user.role, user.role as role_name')
+        $user = $this->select('login.*, user.nama_lengkap, user.role as role_name')
             ->join('user', 'login.id_user = user.id_user', 'left')
             ->where('login.username', $username)
             ->first();

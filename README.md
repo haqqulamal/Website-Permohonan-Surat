@@ -75,14 +75,6 @@ Ikuti langkah-langkah di bawah ini untuk menjalankan aplikasi di komputer lokal 
    ```
    Akses aplikasi di browser: `http://localhost:8080`
 
-### ⚠️ PENTING: Update Database (Revisi)
-
-Karena ada perubahan struktur database (Login terpisah & kolom keterangan), Anda **WAJIB** menjalankan script SQL update:
-
-1. Buka phpMyAdmin -> Database `surat_perizinan`.
-2. Klik tab **Import** atau **SQL**.
-3. Jalankan isi file `migration.sql` (ada di root folder project).
-
 ## Panduan Uji Coba LENGKAP (Testing Scenario)
 
 ### 1. Skenario Login Admin & Setup Akun
@@ -161,3 +153,4 @@ Masuk menggunakan username dan password yang terdaftar.
 - Dikembangkan oleh: [Haqqul Amal]
 - Framework: CodeIgniter 4.6
 - PDF Engine: mPDF 8.x
+

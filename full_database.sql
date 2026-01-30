@@ -109,4 +109,76 @@ CREATE TABLE IF NOT EXISTS `permohonan_sk` (
   KEY `id_penduduk` (`id_penduduk`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `jenis_surat` (Table 6)
+--
+
+CREATE TABLE IF NOT EXISTS `jenis_surat` (
+  `id_jenis` int(11) NOT NULL AUTO_INCREMENT,
+  `nama_surat` varchar(100) NOT NULL,
+  `kode_surat` varchar(50) NOT NULL,
+  PRIMARY KEY (`id_jenis`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `jenis_surat`
+--
+
+INSERT INTO `jenis_surat` (`id_jenis`, `nama_surat`, `kode_surat`) VALUES
+(1, 'Surat Keterangan Usaha', '470/SKU'),
+(2, 'Surat Keterangan Domisili', '470/SKD'),
+(3, 'Surat Keterangan Tidak Mampu', '470/SKTM'),
+(4, 'Surat Pengantar SKCK', '470/SKCK');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `agama` (Table 7)
+--
+
+CREATE TABLE IF NOT EXISTS `agama` (
+  `id_agama` int(11) NOT NULL AUTO_INCREMENT,
+  `nama_agama` varchar(50) NOT NULL,
+  PRIMARY KEY (`id_agama`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `agama`
+--
+
+INSERT INTO `agama` (`id_agama`, `nama_agama`) VALUES
+(1, 'Islam'),
+(2, 'Kristen Protestan'),
+(3, 'Katolik'),
+(4, 'Hindu'),
+(5, 'Buddha'),
+(6, 'Konghucu');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `pekerjaan` (Table 8)
+--
+
+CREATE TABLE IF NOT EXISTS `pekerjaan` (
+  `id_pekerjaan` int(11) NOT NULL AUTO_INCREMENT,
+  `nama_pekerjaan` varchar(100) NOT NULL,
+  PRIMARY KEY (`id_pekerjaan`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `pekerjaan`
+--
+
+INSERT INTO `pekerjaan` (`id_pekerjaan`, `nama_pekerjaan`) VALUES
+(1, 'Belum/Tidak Bekerja'),
+(2, 'Pegawai Negeri Sipil'),
+(3, 'TNI/POLRI'),
+(4, 'Karyawan Swasta'),
+(5, 'Wiraswasta'),
+(6, 'Petani/Pekebun'),
+(7, 'Pelajar/Mahasiswa');
+
 COMMIT;

@@ -66,9 +66,55 @@ Ikuti langkah-langkah di bawah ini untuk menjalankan aplikasi di komputer lokal 
    ```
    Akses aplikasi di browser: `http://localhost:8080`
 
-## Panduan Penggunaan
+### ⚠️ PENTING: Update Database (Revisi)
 
-### 1. Login
+Karena ada perubahan struktur database (Login terpisah & kolom keterangan), Anda **WAJIB** menjalankan script SQL update:
+
+1. Buka phpMyAdmin -> Database `surat_perizinan`.
+2. Klik tab **Import** atau **SQL**.
+3. Jalankan isi file `migration.sql` (ada di root folder project).
+
+## Panduan Uji Coba LENGKAP (Testing Scenario)
+
+### 1. Skenario Login Admin & Setup Akun
+
+- **Login**: Masuk dengan akun `admin`.
+- **Tugas**: Pergi ke menu **Master Data** -> **User**. Buat akun baru untuk simulasi:
+  1. **Ulu-ulu** (Role: ulu-ulu, Password: 123)
+  2. **Lurah** (Role: lurah, Password: 123)
+  3. **Penduduk** (Role: penduduk, Password: 123)
+     > **PENTING**: Saat memilih role "Penduduk", kolom dropdown baru akan muncul. Pastikan Anda **MEMILIH NAMA PENDUDUK** (misal: Budi Santoso) dari dropdown agar akun terhubung dengan data NIK.
+
+### 2. Skenario Pengajuan Surat (Penduduk)
+
+1.  Logout Admin. Login sebagai **Penduduk** (akun yang baru dibuat tadi).
+2.  Buka menu **Pelayanan** -> **Buat Permohonan Baru**.
+3.  Isi "**Jenis Permohonan**" (Contoh: "Surat Keterangan Usaha").
+4.  Klik **Kirim**. Status akan menjadi "Menunggu Staff".
+
+### 3. Skenario Verifikasi Staff (Ulu-ulu)
+
+1.  Logout Penduduk. Login sebagai **Ulu-ulu / Jagabaya**.
+2.  Dashboard akan menampilkan ringkasan "Permohonan Menunggu".
+3.  Buka menu **Persetujuan**.
+4.  Klik tombol **Review** pada surat yang masuk.
+5.  Pilih **SETUJUI** dan beri catatan (Misal: "Data lengkap, lanjut ke Pak Lurah").
+6.  Status menjadi "Disetujui Staff".
+
+### 4. Skenario Pengesahan Lurah
+
+1.  Logout Staff. Login sebagai **Lurah**.
+2.  Buka menu **Pengesahan**.
+3.  Klik tombol **Verifikasi**.
+4.  Pilih **SAHKAN** (Simulasi Tanda Tangan Elektronik).
+5.  Status menjadi "Disahkan Lurah".
+
+### 5. Skenario Download PDF
+
+1.  Login sebagai siapa saja (Penduduk/Admin/Staff).
+2.  Buka menu **Arsip Surat**.
+3.  Klik tombol **PDF** pada surat yang sudah disahkan.
+4.  Pastikan file terdownload dengan nama format: `Surat_[Keterangan]_[Nama].pdf`.
 
 Masuk menggunakan username dan password yang terdaftar.
 

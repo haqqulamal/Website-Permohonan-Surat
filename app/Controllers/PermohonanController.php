@@ -77,8 +77,6 @@ class PermohonanController extends BaseController
     public function arsip()
     {
         $model = new PermohonanModel();
-        // Fetch all disahkan permohonan for everyone (filtered by controller if needed, but usually visible to all users to see public letters)
-        // For security, penduduk should only see their own even in arsip? No, arsip usually implies "Letters that have been issued".
         $data['permohonan'] = $model->getPermohonanWithPenduduk('disahkan_lurah');
         return view('permohonan/arsip', $data);
     }
@@ -93,10 +91,10 @@ class PermohonanController extends BaseController
         $model = new PermohonanModel();
         $id_penduduk = session()->get('id_penduduk');
 
+        // Logic: jenis_permohonan form input saved to 'keterangan' column DB
         $data = [
             'id_penduduk' => $id_penduduk,
-            'jenis_permohonan' => $this->request->getVar('jenis_permohonan'),
-            'keterangan' => $this->request->getVar('keterangan'),
+            'keterangan' => $this->request->getVar('jenis_permohonan'), // MAPPING HERE
             'tanggal_permohonan' => date('Y-m-d'),
             'status' => 'menunggu_staff'
         ];

@@ -45,7 +45,7 @@ class LetterController extends BaseController
                 <tr><td style='width: 180px; padding: 5px;'>Nama Lengkap</td><td>: <b>" . strtoupper($data['nama_lengkap']) . "</b></td></tr>
                 <tr><td style='padding: 5px;'>NIK</td><td>: {$data['nik']}</td></tr>
                 <tr><td style='padding: 5px;'>Alamat</td><td>: {$data['alamat']}</td></tr>
-                <tr><td style='padding: 5px; vertical-align: top;'>Jenis Permohonan</td><td>: <b>{$data['jenis_permohonan']}</b></td></tr>
+                <tr><td style='padding: 5px; vertical-align: top;'>Jenis Permohonan</td><td>: <b>{$data['keterangan']}</b></td></tr>
                 <tr><td style='padding: 5px; vertical-align: top;'>Keterangan</td><td>: {$data['keterangan']}</td></tr>
             </table>
             
@@ -63,7 +63,7 @@ class LetterController extends BaseController
         $mpdf->WriteHTML($html);
 
         // Output the dynamic filename
-        $filename = "Surat_" . str_replace(' ', '_', $data['jenis_permohonan']) . "_" . str_replace(' ', '_', $data['nama_lengkap']) . ".pdf";
+        $filename = "Surat_" . str_replace(' ', '_', $data['keterangan']) . "_" . str_replace(' ', '_', $data['nama_lengkap']) . ".pdf";
 
         return $this->response->setHeader('Content-Type', 'application/pdf')
             ->setHeader('Content-Disposition', 'attachment; filename="' . $filename . '"')

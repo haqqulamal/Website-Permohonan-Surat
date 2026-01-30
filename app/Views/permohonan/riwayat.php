@@ -43,7 +43,7 @@
                                         <?= $no++ ?>
                                     </td>
                                     <td>
-                                        <?= $row['jenis_permohonan'] ?>
+                                        <?= $row['keterangan'] ?>
                                     </td>
                                     <td>
                                         <?= $row['tanggal_permohonan'] ?>

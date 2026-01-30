@@ -41,7 +41,7 @@
                                         <?= $row['nama_lengkap'] ?>
                                     </td>
                                     <td>
-                                        <?= $row['jenis_permohonan'] ?>
+                                        <?= $row['keterangan'] ?>
                                     </td>
                                     <td>
                                         <?= $row['keterangan'] ?>

@@ -10,7 +10,7 @@ class PermohonanModel extends Model
     protected $primaryKey = 'id_surat';
     protected $useAutoIncrement = true;
     protected $returnType = 'array';
-    protected $allowedFields = ['id_penduduk', 'jenis_permohonan', 'keterangan', 'tanggal_permohonan', 'status', 'catatan_staff', 'catatan_lurah'];
+    protected $allowedFields = ['id_penduduk', 'keterangan', 'tanggal_permohonan', 'status', 'catatan_staff', 'catatan_lurah'];
 
     public function getPermohonanWithPenduduk($status = null, $id_penduduk = null)
     {

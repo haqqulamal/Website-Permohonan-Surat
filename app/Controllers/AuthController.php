@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Models\UserModel;
+use App\Models\LoginModel;
 use CodeIgniter\Controller;
 
 class AuthController extends BaseController
@@ -18,27 +18,25 @@ class AuthController extends BaseController
     public function login()
     {
         $session = session();
-        $model = new UserModel();
+        $model = new LoginModel();
 
         $username = $this->request->getVar('username');
         $password = $this->request->getVar('password');
 
-        $data = $model->where('username', $username)->first();
+        $data = $model->getLoginData($username);
 
         if ($data) {
             $pass = $data['password'];
             $authenticatePassword = password_verify($password, $pass);
 
             if ($authenticatePassword) {
-                // Fetch role name
-                $userData = $model->getUserWithRole($data['id_user']);
-
                 $ses_data = [
-                    'id_user' => $userData['id_user'],
-                    'username' => $userData['username'],
-                    'nama_lengkap' => $userData['nama_lengkap'],
-                    'role_name' => $userData['role_name'],
-                    'id_penduduk' => $userData['id_penduduk'],
+                    'id_login' => $data['id_login'],
+                    'id_user' => $data['id_user'] ?? null,
+                    'username' => $data['username'],
+                    'nama_lengkap' => $data['nama_lengkap'], // From User/Penduduk
+                    'role_name' => $data['role_name'], // From User(Roles)/Penduduk
+                    'id_penduduk' => $data['id_penduduk'] ?? null,
                     'isLoggedIn' => TRUE
                 ];
                 $session->set($ses_data);

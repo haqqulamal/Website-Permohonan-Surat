@@ -10,7 +10,7 @@ class UserModel extends Model
     protected $primaryKey = 'id_user';
     protected $useAutoIncrement = true;
     protected $returnType = 'array';
-    protected $allowedFields = ['nama_lengkap', 'email', 'role', 'id_role', 'id_penduduk', 'username', 'password'];
+    protected $allowedFields = ['nama_lengkap', 'email', 'role', 'id_role'];
 
     public function getUserWithRole($id_user)
     {

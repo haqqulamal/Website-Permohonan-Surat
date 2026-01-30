@@ -114,12 +114,23 @@
                     </div>
                     <div class="form-group">
                         <label>Role</label>
-                        <select name="role" class="form-control" required>
+                        <select name="role" id="roleSelect" class="form-control" required>
                             <option value="admin">Admin</option>
                             <option value="penduduk">Penduduk</option>
                             <option value="jagabaya">Jagabaya</option>
                             <option value="ulu-ulu">Ulu-ulu</option>
                             <option value="lurah">Lurah</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="pendudukGroup" style="display:none;">
+                        <label>Pilih Data Penduduk (Wajib untuk Role Penduduk)</label>
+                        <select name="id_penduduk" class="form-control select2" style="width: 100%;">
+                            <option value="">-- Pilih Penduduk --</option>
+                            <?php if (isset($list_penduduk)):
+                                foreach ($list_penduduk as $p): ?>
+                                    <option value="<?= $p['id_penduduk'] ?>"><?= $p['nik'] ?> - <?= $p['nama_lengkap'] ?>
+                                    </option>
+                                <?php endforeach; endif; ?>
                         </select>
                     </div>
                 </div>
@@ -137,6 +148,15 @@
 <script>
     $(function () {
         $("#data").DataTable();
+
+        // Toggle Penduduk Dropdown
+        $('#roleSelect').change(function() {
+            if ($(this).val() == 'penduduk') {
+                $('#pendudukGroup').show();
+            } else {
+                $('#pendudukGroup').hide();
+            }
+        });
     });
 </script>
 <?= $this->endSection() ?>
